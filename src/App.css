@@ -1,0 +1,78 @@
+body{
+    margin: 0;
+    padding: 0;
+    background: hsla(232, 31%, 20%, 1);
+
+    background: linear-gradient(90deg, hsla(232, 31%, 20%, 1) 0%, hsla(229, 31%, 28%, 1) 100%);
+
+    font-family: "Playfair Display";
+}
+.custom-navbar{
+    background: hsla(228, 17%, 53%, 1);
+
+    background: linear-gradient(90deg, hsla(228, 17%, 53%, 1) 0%, hsla(229, 28%, 88%, 1) 100%);
+}
+.main-heading{
+    font-size: 4rem;
+    color: rgb(255, 255, 255);
+    margin-top: 5rem;
+}
+.home-text{
+    font-size: 2rem;
+    color: rgb(202, 202, 202);
+}
+.text-section{
+    padding: 2rem;
+}
+.about-heading{
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: aliceblue;
+}
+.about-text{
+    font-size: larger;
+    font-weight: 500;
+    color: rgb(213, 213, 213);
+}
+.row {
+    --bs-gutter-x: 0rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}  
+.nav-links{
+    font-weight: 500;
+    font-size: large;
+}
+.logo-nav{
+    font-size: 1.4rem;
+}
+/* src/components/FancyButton.css */
+.button {
+    display: inline-block;
+    font-size: 1.25rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #5e7ca7, #6c869e);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .button:hover {
+    background: linear-gradient(45deg, #ffffff, #98a3c6);
+    transform: scale(1.05);
+    color: black;
+  }
+  
+  .button:active {
+    transform: scale(0.95);
+  }
+  
