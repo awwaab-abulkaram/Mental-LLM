@@ -3,25 +3,23 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Components/Home';
 import About from './Components/About';
-import Mission from './Components/Mission';
 import { AuthProvider } from "./contexts/AuthContext";
-import SignUp from "./Components/SignUp";
-import SignIn from "./Components/SignIn";
-import SignOut from "./Components/SignOut";
 import Land from './Components/Land';
-import ProtectedRoute from "./Components/ProtectedRoute";
+import Faq from './Components/Faq';
+import { GetStarted } from './Components/GetStarted';
+import MoreInfo from './Components/MoreInfo';
+
 
 function App() {
   return (
     <Router>
       <AuthProvider>
       <Routes>
-        <Route path='/about' element ={<About/>}></Route>
-        <Route path='/mission' element ={<Mission/>}></Route>
+        <Route path='/about' element ={<About/>}/>
+        <Route path='/more-info' element ={<MoreInfo/>}/>
+        <Route path='/faqs' element ={<Faq/>}/>
         <Route path="/login" element={<Land />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signout" element={<SignOut />} />
+        <Route path="/getstarted" element={<GetStarted />} />
         <Route path="/" element={
             <Home />
         } />
