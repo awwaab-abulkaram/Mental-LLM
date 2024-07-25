@@ -8,7 +8,9 @@ import Land from './Components/Land';
 import Faq from './Components/Faq';
 import { GetStarted } from './Components/GetStarted';
 import MoreInfo from './Components/MoreInfo';
-
+import SignUp from './Components/SignUp';
+import MentalHealthPredictor from './Components/Axios';
+import ProtectedRoute from './Components/ProtectedRoute';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path='/more-info' element ={<MoreInfo/>}/>
         <Route path='/faqs' element ={<Faq/>}/>
         <Route path="/login" element={<Land />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/axios" element={<MentalHealthPredictor />} />
         <Route path="/getstarted" element={<GetStarted />} />
         <Route path="/" element={
             <Home />

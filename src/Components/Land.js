@@ -4,6 +4,7 @@ import Navbar1 from './Navbar';
 import { Link } from 'react-router-dom';
 import { auth, googleProvider } from '../firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { FcGoogle } from "react-icons/fc";
 
 const Land = () => {
   const [email, setEmail] = useState('');
@@ -31,7 +32,7 @@ const Land = () => {
   };
 
   return (
-    <div>
+    <div className='signin-back'>
       <Navbar1 />
       <div className="container d-flex justify-content-center align-items-center min-vh-100">
         <div className="card p-4 sign-in-box">
@@ -66,9 +67,9 @@ const Land = () => {
                 className="btn btn-block mt-3"
                 onClick={handleGoogleSignIn}
               >
-                Sign In with Google
+                Sign In with Google <FcGoogle size={32} />
               </button>
-              <div>Don't have an account? <Link onClick={handleSignIn}>Sign Up</Link></div>
+              <div>Don't have an account? <Link to= '/signup'>Sign Up</Link></div>
             </div>
           </form>
         </div>
