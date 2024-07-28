@@ -7,8 +7,9 @@ import {
   Tooltip
 } from 'chart.js';
 import Navbar1 from './Navbar';
+import Loader from './Loader'; // Import the Loader component
+import FeedbackPopup from './FeedbackPopup'; // Import the FeedbackPopup component
 import './Axios.css'; // Import custom CSS
-
 
 // Register necessary components
 ChartJS.register(ArcElement, Tooltip);
@@ -17,28 +18,65 @@ const MentalHealthPredictor = () => {
   const [text, setText] = useState('');
   const [prediction, setPrediction] = useState(null);
   const [multiclassPrediction, setMulticlassPrediction] = useState(null);
+  const [mentalIllness, setMentalIllness] = useState(null);
   const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
 
   const handleInputChange = (event) => {
     setText(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    try {
-      // Fetch binary model prediction
-      const binaryResponse = await axios.post('http://localhost:5500/predict/stress', { text });
-      setPrediction(binaryResponse.data);
-      
-      // Fetch multiclass model prediction
-      const multiclassResponse = await axios.post('http://localhost:5500/predict/multiclass', { text });
-      setMulticlassPrediction(multiclassResponse.data);
-      
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching predictions:', err);
-      setError('Failed to fetch predictions. Please try again.');
+    setSubmitted(true); // Hide the button upon submit
+    setLoading(true); // Start loading
+
+    setTimeout(async () => {
+      try {
+        // Fetch binary model prediction
+        const binaryResponse = await axios.post('http://localhost:5500/predict/stress', { text });
+        setPrediction(binaryResponse.data);
+
+        // Fetch multiclass model prediction
+        const multiclassResponse = await axios.post('http://localhost:5500/predict/multiclass', { text });
+        setMulticlassPrediction(multiclassResponse.data);
+
+        // Fetch mental illness detection
+        const mentalIllnessResponse = await axios.post('http://localhost:5500/predict/mental', { text });
+        setMentalIllness(mentalIllnessResponse.data.mental_illness);
+
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching predictions:', err);
+        setError('Failed to fetch predictions. Please try again.');
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    }, 3000); // Set the loader to show for 3 seconds
+  };
+
+  const handleRefresh = () => {
+    const userIsLoggedIn = true; // Replace this with actual logic to check if the user is logged in
+    if (userIsLoggedIn) {
+      setShowPopup(true); // Show the feedback popup
+    } else {
+      window.scrollTo(0, 0); // Scroll to top
+      window.location.reload(); // Refresh the page
     }
+  };
+
+  const handlePopupSubmit = () => {
+    setShowPopup(false);
+    window.scrollTo(0, 0); // Scroll to top
+    window.location.reload(); // Refresh the page
+  };
+
+  const handlePopupSkip = () => {
+    setShowPopup(false);
+    window.scrollTo(0, 0); // Scroll to top
+    window.location.reload(); // Refresh the page
   };
 
   const pieData = prediction ? {
@@ -48,6 +86,7 @@ const MentalHealthPredictor = () => {
       backgroundColor: ['#30638E', '#ddd'],
     }],
   } : null;
+
   return (
     <div className='axios'>
       <Navbar1 />
@@ -66,70 +105,110 @@ const MentalHealthPredictor = () => {
               required
             ></textarea>
           </div>
-          <button type="submit" className="btn-custom">Predict Now</button>
+          {!submitted && (
+            <button type="submit" className="btn-custom">Predict Now</button>
+          )}
         </form>
         {error && <div className="alert alert-danger mt-4">{error}</div>}
-        {prediction && (
-          <div className="mt-4">
-            <div className="row">
-              <div className="col-md-6">
-                <div className="card-custom">
-                  <div className="card-body-custom">
-                    <h5 className="card-title-custom">Stress Detector</h5>
-                    <p className="card-text-custom">{prediction['Disorder Present']}</p>
-                  </div>
-                </div>
-                {prediction && (
-                  <div className="card-custom mt-4">
-                    <div className="card-body-custom">
-                      <h5 className="card-title-custom">Confidence Score</h5>
-                      <p className="card-text-custom">
-                        {prediction['Severity Score'] !== undefined 
-                          ? prediction['Severity Score'].toFixed(2) 
-                          : 'Not available'}
-                      </p>
-                      {pieData && (
-                        <div className="chart-container" style={{ maxWidth: '200px', margin: '0 auto' }}>
-                          <Pie data={pieData} width={200} height={200} />
+        {loading ? ( // Show loader while loading
+          <Loader />
+        ) : (
+          <>
+            {prediction && (
+              <div className="mt-4">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="card-custom">
+                      <div className="card-body-custom">
+                        <h5 className="card-title-custom">Stress Detector</h5>
+                        <p className="card-text-custom">{prediction['Disorder Present']}</p>
+                      </div>
+                    </div>
+                    {prediction && (
+                      <div className="card-custom mt-4">
+                        <div className="card-body-custom">
+                          <h5 className="card-title-custom">Confidence Score</h5>
+                          <p className="card-text-custom">
+                            {prediction['Severity Score'] !== undefined 
+                              ? prediction['Severity Score'].toFixed(2) 
+                              : 'Not available'}
+                          </p>
+                          {pieData && (
+                            <div className="chart-container" style={{ maxWidth: '200px', margin: '0 auto' }}>
+                              <Pie data={pieData} width={200} height={200} />
+                            </div>
+                          )}
+                          <p className='confi-text'>
+                            * Confidence Score provides insights into how certain the model is about its individual predictions
+                          </p>
                         </div>
-                      )}
-                      <p className='confi-text'>
-                        * Confidence Score provides insights into how certain the model is about it's individual predictions
-                      </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <div className="card-custom">
+                      <div className="card-body-custom">
+                        <h5 className="card-title-custom">Recommendations</h5>
+                        <p className="card-text-custom">
+                          {prediction ? "Here are some recommendations based on your input." : "No recommendations available."}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
-              <div className="col-md-6">
-                <div className="card-custom">
-                  <div className="card-body-custom">
-                    <h5 className="card-title-custom">Recommendations</h5>
-                    <p className="card-text-custom">
-                      {prediction ? "Here are some recommendations based on your input." : "No recommendations available."}
-                    </p>
+            )}
+            {multiclassPrediction && (
+              <div className="mt-4">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="card-custom">
+                      <div className="card-body-custom">
+                        <h5 className="card-title-custom">Depression Level</h5>
+                        <p className="card-text-custom">
+                          Your text was found to contain a {multiclassPrediction['Disorder']} level of depression.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-        {multiclassPrediction && (
-          <div className="mt-4">
-            <div className="row">
-              <div className="col-md-12">
-                <div className="card-custom">
-                  <div className="card-body-custom">
-                    <h5 className="card-title-custom">Depression Level</h5>
-                    <p className="card-text-custom">
-                      Your text was found to contain a level of {multiclassPrediction['Disorder']} depression.
-                    </p>
+            )}
+            {mentalIllness && (
+              <div className="mt-4">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="card-custom">
+                      <div className="card-body-custom">
+                        <h5 className="card-title-custom">Mental Illness Detection</h5>
+                        <p className="card-text-custom">
+                          Detected mental illness: {mentalIllness || "No specific mental illness detected."}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            )}
+            {(prediction || multiclassPrediction || mentalIllness) && (
+              <div className="mt-4">
+                <button className="btn-custom" onClick={handleRefresh}>End Session</button>
+              </div>
+            )}
+          </>
         )}
       </div>
+      {showPopup && (
+        <FeedbackPopup
+          userInput={text}
+          userId="user-id-placeholder" // Replace with actual user ID
+          initialStressLabel={prediction ? prediction['Disorder Present'] : ''}
+          initialDepressionSeverity={multiclassPrediction ? multiclassPrediction['Disorder'] : ''}
+          initialMentalIllness={mentalIllness}
+          onSubmit={handlePopupSubmit}
+          onSkip={handlePopupSkip}
+        />
+      )}
     </div>
   );
 };

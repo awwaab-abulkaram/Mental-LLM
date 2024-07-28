@@ -10,13 +10,14 @@ import { GetStarted } from './Components/GetStarted';
 import MoreInfo from './Components/MoreInfo';
 import SignUp from './Components/SignUp';
 import MentalHealthPredictor from './Components/Axios';
-import ProtectedRoute from './Components/ProtectedRoute';
+import FeedbackPopup from './Components/FeedbackPopup';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
       <Routes>
+        <Route path="/f" element={<FeedbackPopup />} />
         <Route path='/about' element ={<About/>}/>
         <Route path='/more-info' element ={<MoreInfo/>}/>
         <Route path='/faqs' element ={<Faq/>}/>

@@ -14,7 +14,7 @@ const Land = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = '/getstarted'; // Redirect to the dashboard or home page after sign-in
+      window.location.href = '/axios'; // Redirect to the dashboard or home page after sign-in
     } catch (error) {
       console.error("Error signing in with password and email", error);
       alert(error.message);
@@ -24,7 +24,7 @@ const Land = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      window.location.href = '/getstarted'; // Redirect to the dashboard or home page after Google sign-in
+      window.location.href = '/axios'; // Redirect to the dashboard or home page after Google sign-in
     } catch (error) {
       console.error("Error signing in with Google", error);
       alert(error.message);

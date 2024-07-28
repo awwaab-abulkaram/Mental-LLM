@@ -18,7 +18,7 @@ const SignUp = () => {
     }
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      window.location.href = '/getstarted'; // Redirect to the dashboard or home page after sign-up
+      window.location.href = '/axios'; // Redirect to the dashboard or home page after sign-up
     } catch (error) {
       console.error("Error signing up with email and password", error);
       alert(error.message);
@@ -28,7 +28,7 @@ const SignUp = () => {
   const handleGoogleSignUp = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      window.location.href = '/getstarted'; // Redirect to the dashboard or home page after Google sign-up
+      window.location.href = '/axios'; // Redirect to the dashboard or home page after Google sign-up
     } catch (error) {
       console.error("Error signing up with Google", error);
       alert(error.message);

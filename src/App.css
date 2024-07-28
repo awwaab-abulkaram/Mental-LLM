@@ -237,7 +237,7 @@ body{
 .axios{
   background-image: url('./Assets/city.png');
   background-position: center;
-  height: 130vh;
+  height: 140vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
