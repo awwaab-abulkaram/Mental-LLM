@@ -28,7 +28,6 @@ const FeedbackPopup = ({ userInput, userId, initialStressLabel, initialDepressio
     if (isAgreed) {
       const db = getFirestore();
       await addDoc(collection(db, 'feedback'), {
-        userId,
         userInput,
         stressLabel,
         depressionSeverity,

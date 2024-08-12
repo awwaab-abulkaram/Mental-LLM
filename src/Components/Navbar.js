@@ -3,11 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
 import { FaUserCircle } from 'react-icons/fa';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '../firebase'; // Adjust the import path as necessary
+import { auth } from '../firebase'; 
 
 function Navbar1() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false); // New state for tracking auth check
+  const [authChecked, setAuthChecked] = useState(false); 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -19,23 +19,23 @@ function Navbar1() {
         setIsLoggedIn(false);
         setUser(null);
       }
-      setAuthChecked(true); // Set authChecked to true after checking auth state
+      setAuthChecked(true); 
     });
 
-    return () => unsubscribe(); // Clean up the subscription on unmount
+    return () => unsubscribe(); 
   }, []);
 
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      setIsLoggedIn(false); // Optional: Update state to reflect sign out
+      setIsLoggedIn(false); 
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
 
   if (!authChecked) {
-    // Optionally, you can render a loader or nothing until auth state is checked
+  
     return null; 
   }
 

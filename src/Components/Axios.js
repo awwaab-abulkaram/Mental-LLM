@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pie } from 'react-chartjs-2';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -19,10 +20,24 @@ const MentalHealthPredictor = () => {
   const [prediction, setPrediction] = useState(null);
   const [multiclassPrediction, setMulticlassPrediction] = useState(null);
   const [mentalIllness, setMentalIllness] = useState(null);
+  const [recommendations, setRecommendations] = useState(null); // Add recommendations state
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [user, setUser] = useState(null); // State to store user information
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleInputChange = (event) => {
     setText(event.target.value);
@@ -30,12 +45,11 @@ const MentalHealthPredictor = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setSubmitted(true); // Hide the button upon submit
-    setLoading(true); // Start loading
+    setSubmitted(true); 
+    setLoading(true); 
 
     setTimeout(async () => {
       try {
-        // Fetch binary model prediction
         const binaryResponse = await axios.post('http://localhost:5500/predict/stress', { text });
         setPrediction(binaryResponse.data);
 
@@ -46,6 +60,10 @@ const MentalHealthPredictor = () => {
         // Fetch mental illness detection
         const mentalIllnessResponse = await axios.post('http://localhost:5500/predict/mental', { text });
         setMentalIllness(mentalIllnessResponse.data.mental_illness);
+
+        // Fetch recommendations
+        const recommendationsResponse = await axios.post('http://localhost:5500/recommendations', { mental_disorder: mentalIllnessResponse.data.mental_illness });
+        setRecommendations(recommendationsResponse.data.recommendations);
 
         setError(null);
       } catch (err) {
@@ -58,12 +76,12 @@ const MentalHealthPredictor = () => {
   };
 
   const handleRefresh = () => {
-    const userIsLoggedIn = true; // Replace this with actual logic to check if the user is logged in
-    if (userIsLoggedIn) {
+    if (user) {
       setShowPopup(true); // Show the feedback popup
     } else {
       window.scrollTo(0, 0); // Scroll to top
       window.location.reload(); // Refresh the page
+      setShowPopup(false);
     }
   };
 
@@ -150,23 +168,7 @@ const MentalHealthPredictor = () => {
                       <div className="card-body-custom">
                         <h5 className="card-title-custom">Recommendations</h5>
                         <p className="card-text-custom">
-                          {prediction ? "Here are some recommendations based on your input." : "No recommendations available."}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            {multiclassPrediction && (
-              <div className="mt-4">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="card-custom">
-                      <div className="card-body-custom">
-                        <h5 className="card-title-custom">Depression Level</h5>
-                        <p className="card-text-custom">
-                          Your text was found to contain a {multiclassPrediction['Disorder']} level of depression.
+                          {recommendations || "No recommendations available."}
                         </p>
                       </div>
                     </div>
@@ -190,6 +192,22 @@ const MentalHealthPredictor = () => {
                 </div>
               </div>
             )}
+            {multiclassPrediction && (
+              <div className="mt-4">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="card-custom">
+                      <div className="card-body-custom">
+                        <h5 className="card-title-custom">Depression Level</h5>
+                        <p className="card-text-custom">
+                          Your text was found to contain a {multiclassPrediction['Disorder']} level of depression.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             {(prediction || multiclassPrediction || mentalIllness) && (
               <div className="mt-4">
                 <button className="btn-custom" onClick={handleRefresh}>End Session</button>
@@ -201,7 +219,6 @@ const MentalHealthPredictor = () => {
       {showPopup && (
         <FeedbackPopup
           userInput={text}
-          userId="user-id-placeholder" // Replace with actual user ID
           initialStressLabel={prediction ? prediction['Disorder Present'] : ''}
           initialDepressionSeverity={multiclassPrediction ? multiclassPrediction['Disorder'] : ''}
           initialMentalIllness={mentalIllness}
